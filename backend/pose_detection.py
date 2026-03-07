@@ -2,20 +2,19 @@ import cv2
 import mediapipe as mp
 
 mp_pose = mp.solutions.pose
+pose = mp_pose.Pose()
 
-def detect_pose(video_path):
-    
-    cap = cv2.VideoCapture(video_path)
+def detect_pose(frame):
 
-    with mp_pose.Pose() as pose:
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
+    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            results = pose.process(image)
+    results = pose.process(rgb)
 
-    cap.release()
+    if results.pose_landmarks:
+        for landmark in results.pose_landmarks.landmark:
+            h, w, _ = frame.shape
+            cx = int(landmark.x * w)
+            cy = int(landmark.y * h)
+            cv2.circle(frame,(cx,cy),5,(0,255,0),-1)
 
-    return "Pose detection completed"
+    return frame
