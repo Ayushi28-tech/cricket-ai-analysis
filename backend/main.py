@@ -1,25 +1,36 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
+
 from backend.video_compare import compare_videos
 
 app = FastAPI()
 
-UPLOAD_FOLDER = "uploads"
-REFERENCE_VIDEO = "dataset/virat_kohli/cover_drive.mp4"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+
 @app.post("/upload")
+async def upload_video(file: UploadFile = File(...)):
 
-async def upload_video(video: UploadFile = File(...)):
+    file_path = f"uploads/{file.filename}"
 
-    file_location = os.path.join(UPLOAD_FOLDER, video.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-    with open(file_location, "wb") as buffer:
-        shutil.copyfileobj(video.file, buffer)
+    similarity, feedback, output_video = compare_videos(file_path)
 
-    # start comparison
-    compare_videos(file_location, REFERENCE_VIDEO)
-
-    return {"message": "Video uploaded and comparison started"}
+    return {
+        "status": "completed",
+        "similarity": similarity,
+        "feedback": feedback,
+        "video_url": f"http://127.0.0.1:8000/{output_video}"
+    }
