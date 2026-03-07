@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cricket AI Shot Analysis</title>
+</head>
+
+<body>
+
+<h2>Upload Your Cricket Shot</h2>
+
+<input type="file" id="videoFile">
+<button onclick="uploadVideo()">Upload</button>
+
+<h3>Result</h3>
+
+<video id="resultVideo" width="600" controls></video>
+
+<script>
+
+function uploadVideo() {
+
+let file = document.getElementById("videoFile").files[0];
+
+let formData = new FormData();
+formData.append("video", file);
+
+fetch("http://127.0.0.1:8000/upload",{
+method:"POST",
+body:formData
+})
+.then(res => res.blob())
+.then(data=>{
+let videoURL = URL.createObjectURL(data);
+document.getElementById("resultVideo").src = videoURL;
+});
+
+}
+
+</script>
+
+</body>
+</html>
