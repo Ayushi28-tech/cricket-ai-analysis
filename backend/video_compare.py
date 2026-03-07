@@ -20,11 +20,11 @@ def compare_videos(user_video, reference_video):
         frame1 = detect_pose(frame1)
         frame2 = detect_pose(frame2)
 
-        combined = cv2.hconcat([frame1,frame2])
+        combined = cv2.hconcat([frame1, frame2])
 
-        cv2.imshow("AI Shot Comparison",combined)
+        cv2.imshow("Cricket Shot Comparison", combined)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
     cap1.release()
