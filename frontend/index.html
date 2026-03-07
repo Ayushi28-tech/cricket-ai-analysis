@@ -11,28 +11,41 @@
 <input type="file" id="videoFile">
 <button onclick="uploadVideo()">Upload</button>
 
-<h3>Result</h3>
+<h3 id="status"></h3>
 
-<video id="resultVideo" width="600" controls></video>
+<p id="similarity"></p>
+<p id="feedback"></p>
+
+<video id="resultVideo" controls width="600"></video>
 
 <script>
 
-function uploadVideo() {
+async function uploadVideo(){
 
-let file = document.getElementById("videoFile").files[0];
+document.getElementById("status").innerText="Processing video..."
 
-let formData = new FormData();
-formData.append("video", file);
+const fileInput=document.getElementById("videoFile")
 
-fetch("http://127.0.0.1:8000/upload",{
+const file=fileInput.files[0]
+
+const formData=new FormData()
+
+formData.append("file",file)
+
+const response=await fetch("http://127.0.0.1:8000/upload",{
 method:"POST",
 body:formData
 })
-.then(res => res.blob())
-.then(data=>{
-let videoURL = URL.createObjectURL(data);
-document.getElementById("resultVideo").src = videoURL;
-});
+
+const data=await response.json()
+
+document.getElementById("status").innerText="Processing completed"
+
+document.getElementById("similarity").innerText="Similarity Score: "+data.similarity+"%"
+
+document.getElementById("feedback").innerText="Feedback: "+data.feedback
+
+document.getElementById("resultVideo").src=data.video_url
 
 }
 
