@@ -1,16 +1,18 @@
 from fastapi import FastAPI, UploadFile, File
 import shutil
+import os
 
 app = FastAPI()
 
-@app.get("/")
-def home():
-    return {"message": "Cricket AI Analysis API Running"}
+UPLOAD_FOLDER = "uploads"
 
-@app.post("/upload-video/")
-async def upload_video(file: UploadFile = File(...)):
-    
-    with open(f"uploads/{file.filename}", "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+@app.post("/upload")
 
-    return {"message": "Video uploaded successfully"}
+async def upload_video(video: UploadFile = File(...)):
+
+    file_path = os.path.join(UPLOAD_FOLDER, video.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(video.file, buffer)
+
+    return {"message": "Video uploaded"}
