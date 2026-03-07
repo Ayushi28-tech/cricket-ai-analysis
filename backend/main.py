@@ -1,11 +1,15 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import shutil
 import os
 
 from backend.video_compare import compare_videos
 
 app = FastAPI()
+
+os.makedirs("output", exist_ok=True)
+app.mount("/output", StaticFiles(directory="output"), name="output")
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,5 +36,5 @@ async def upload_video(file: UploadFile = File(...)):
         "status": "completed",
         "similarity": similarity,
         "feedback": feedback,
-        "video_url": f"http://127.0.0.1:8000/{output_video}"
+        "video_url": f"http://127.0.0.1:8000/output/result.mp4"
     }

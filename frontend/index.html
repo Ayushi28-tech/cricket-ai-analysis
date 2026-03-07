@@ -1,55 +1,153 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Cricket AI Shot Analysis</title>
+    <title>AI Cricket Shot Analyzer</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 36px;
+        }
+
+        .uploadBox {
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #ff9800;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #e68900;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .videoBox {
+            background: #1b2a38;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        video {
+            width: 420px;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .scoreBox {
+            margin-top: 30px;
+            font-size: 20px;
+        }
+
+        #similarity {
+            font-size: 26px;
+            color: #00e676;
+        }
+
+        #feedback {
+            font-size: 18px;
+            color: #ffd54f;
+        }
+    </style>
+
 </head>
 
 <body>
 
-<h2>Upload Your Cricket Shot</h2>
+    <h1>🏏 AI Cricket Shot Analyzer</h1>
 
-<input type="file" id="videoFile">
-<button onclick="uploadVideo()">Upload</button>
+    <div class="uploadBox">
 
-<h3 id="status"></h3>
+        <h3>Upload Your Cricket Shot</h3>
 
-<p id="similarity"></p>
-<p id="feedback"></p>
+        <input type="file" id="videoFile">
 
-<video id="resultVideo" controls width="600"></video>
+        <button onclick="uploadVideo()">Analyze Shot</button>
 
-<script>
+    </div>
 
-async function uploadVideo(){
+    <h3 id="status"></h3>
 
-document.getElementById("status").innerText="Processing video..."
+    <div class="container">
 
-const fileInput=document.getElementById("videoFile")
+        <div class="videoBox">
+            <h3>How I Played</h3>
+            <video id="userVideo" controls></video>
+        </div>
 
-const file=fileInput.files[0]
+        <div class="videoBox">
+            <h3>If I Played Like Virat Kohli</h3>
+            <video id="refVideo" controls></video>
+        </div>
 
-const formData=new FormData()
+    </div>
 
-formData.append("file",file)
+    <div class="scoreBox">
 
-const response=await fetch("http://127.0.0.1:8000/upload",{
-method:"POST",
-body:formData
-})
+        <p id="similarity"></p>
 
-const data=await response.json()
+        <p id="feedback"></p>
 
-document.getElementById("status").innerText="Processing completed"
+    </div>
 
-document.getElementById("similarity").innerText="Similarity Score: "+data.similarity+"%"
+    <script>
 
-document.getElementById("feedback").innerText="Feedback: "+data.feedback
+        async function uploadVideo() {
 
-document.getElementById("resultVideo").src=data.video_url
+            document.getElementById("status").innerText = "Processing video..."
 
-}
+            const fileInput = document.getElementById("videoFile")
+            const file = fileInput.files[0]
 
-</script>
+            document.getElementById("userVideo").src = URL.createObjectURL(file)
+
+            const formData = new FormData()
+            formData.append("file", file)
+
+            const response = await fetch("http://127.0.0.1:8000/upload", {
+                method: "POST",
+                body: formData
+            })
+
+            const data = await response.json()
+
+            document.getElementById("status").innerText = "Analysis Completed"
+
+            document.getElementById("similarity").innerText = "Similarity Score : " + data.similarity + "%"
+
+            document.getElementById("feedback").innerText = "AI Feedback : " + data.feedback
+
+            document.getElementById("refVideo").src = "cover_drive.mp4"
+
+        }
+
+    </script>
 
 </body>
+
 </html>
