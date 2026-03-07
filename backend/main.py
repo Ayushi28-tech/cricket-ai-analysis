@@ -6,7 +6,7 @@ from backend.video_compare import compare_videos
 app = FastAPI()
 
 UPLOAD_FOLDER = "uploads"
-DATASET_VIDEO = "dataset/virat_kohli/cover_drive.mp4"
+REFERENCE_VIDEO = "dataset/virat_kohli/cover_drive.mp4"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -14,11 +14,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 async def upload_video(video: UploadFile = File(...)):
 
-    file_path = os.path.join(UPLOAD_FOLDER, video.filename)
+    file_location = os.path.join(UPLOAD_FOLDER, video.filename)
 
-    with open(file_path, "wb") as buffer:
+    with open(file_location, "wb") as buffer:
         shutil.copyfileobj(video.file, buffer)
 
-    compare_videos(file_path, DATASET_VIDEO)
+    # start comparison
+    compare_videos(file_location, REFERENCE_VIDEO)
 
-    return {"message": "Comparison started"}
+    return {"message": "Video uploaded and comparison started"}
