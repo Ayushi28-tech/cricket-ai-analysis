@@ -1,4 +1,5 @@
 import cv2
+from backend.pose_detection import detect_pose
 
 def compare_videos(user_video, reference_video):
 
@@ -16,13 +17,16 @@ def compare_videos(user_video, reference_video):
         frame1 = cv2.resize(frame1,(640,480))
         frame2 = cv2.resize(frame2,(640,480))
 
+        frame1 = detect_pose(frame1)
+        frame2 = detect_pose(frame2)
+
         combined = cv2.hconcat([frame1,frame2])
 
-        cv2.imshow("Shot Comparison",combined)
+        cv2.imshow("AI Shot Comparison",combined)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap1.release()
     cap2.release()
-    cv2.destroyAllWindows()"Comparison completed"
+    cv2.destroyAllWindows()
