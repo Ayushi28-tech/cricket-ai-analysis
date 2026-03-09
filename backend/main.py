@@ -30,11 +30,12 @@ async def upload_video(file: UploadFile = File(...)):
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    similarity, feedback, output_video = compare_videos(file_path)
+    similarity, feedback, phases, output_video = compare_videos(file_path)
 
     return {
         "status": "completed",
         "similarity": similarity,
         "feedback": feedback,
+        "phases": phases,
         "video_url": f"http://127.0.0.1:8000/output/result.mp4"
     }

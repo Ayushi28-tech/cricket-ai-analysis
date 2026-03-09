@@ -45,18 +45,20 @@
             flex-wrap: wrap;
         }
 
-        .videoBox {
-            background: #1b2a38;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.5);
+        .videoBox{
+            background:#1b2a38;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0px 5px 20px rgba(0,0,0,0.5);
+            width:420px;
         }
 
-        video {
-            width: 420px;
-            height: 260px;
-            object-fit: cover;
-            border-radius: 8px;
+        .videoBox video{
+            width:100%;
+            height:auto;
+            max-height:420px;
+            border-radius:8px;
+            background:black;
         }
 
         .scoreBox {
@@ -67,6 +69,11 @@
         #similarity {
             font-size: 26px;
             color: #00e676;
+        }
+        
+        #phases {
+            font-size: 20px;
+            color: #4fbcff;
         }
 
         #feedback {
@@ -99,18 +106,21 @@
             <h3>How I Played</h3>
             <video id="userVideo" controls></video>
         </div>
-
+        
         <div class="videoBox">
             <h3>If I Played Like Virat Kohli</h3>
             <video id="refVideo" controls></video>
         </div>
-
+        <div class="videoBox">
+            <h3>AI Processed Video</h3>
+            <video id="resultVideo" controls></video>
+        </div>
     </div>
 
     <div class="scoreBox">
 
         <p id="similarity"></p>
-
+        <p id="phases"></p>
         <p id="feedback"></p>
 
     </div>
@@ -124,10 +134,10 @@
             const fileInput = document.getElementById("videoFile")
             const file = fileInput.files[0]
 
-            document.getElementById("userVideo").src = URL.createObjectURL(file)
-
             const formData = new FormData()
             formData.append("file", file)
+            
+            document.getElementById("userVideo").src = URL.createObjectURL(file)
 
             const response = await fetch("http://127.0.0.1:8000/upload", {
                 method: "POST",
@@ -139,11 +149,11 @@
             document.getElementById("status").innerText = "Analysis Completed"
 
             document.getElementById("similarity").innerText = "Similarity Score : " + data.similarity + "%"
-
-            document.getElementById("feedback").innerText = "AI Feedback : " + data.feedback
-
+            document.getElementById("phases").innerText = "Shot Phases : " + data.phases.join(", ")
+            document.getElementById("feedback").innerText = "AI Feedback : " + data.feedback.join(", ")
+            
             document.getElementById("refVideo").src = "cover_drive.mp4"
-
+            document.getElementById("resultVideo").src = "http://127.0.0.1:8000/output/result.mp4?" + new Date().getTime()
         }
 
     </script>
