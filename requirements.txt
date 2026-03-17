@@ -3,3 +3,5 @@ uvicorn
 opencv-python
 mediapipe
 python-multipart
+numpy
+scikit-learn

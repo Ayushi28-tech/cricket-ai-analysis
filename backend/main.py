@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import shutil
 import os
 
@@ -37,5 +38,9 @@ async def upload_video(file: UploadFile = File(...)):
         "similarity": similarity,
         "feedback": feedback,
         "phases": phases,
-        "video_url": f"http://127.0.0.1:8000/output/result.mp4"
+        "video_url": "/output/result.mp4"
     }
+
+@app.get("/")
+def home():
+    return FileResponse("index.html")
