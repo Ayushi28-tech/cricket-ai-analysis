@@ -152,7 +152,7 @@
             document.getElementById("phases").innerText = "Shot Phases : " + data.phases.join(", ")
             document.getElementById("feedback").innerText = "AI Feedback : " + data.feedback.join(", ")
             
-            document.getElementById("refVideo").src = "cover_drive.mp4"
+            document.getElementById("refVideo").src = "/videos/cover_drive.mp4?" + new Date().getTime()
             document.getElementById("resultVideo").src = "/output/result.mp4?" + new Date().getTime()
         }
 

@@ -37,7 +37,7 @@ def compare_videos(user_video):
 
         if not ret:
             break
-
+    
         frame, landmarks = detect_pose(frame)
 
         if landmarks:

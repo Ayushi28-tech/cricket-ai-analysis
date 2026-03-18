@@ -14,6 +14,7 @@ os.makedirs("output", exist_ok=True)
 
 # static for output video only
 app.mount("/output", StaticFiles(directory="output"), name="output")
+app.mount("/videos", StaticFiles(directory="dataset/virat_kohli"), name="videos")
 
 #cores
 app.add_middleware(
