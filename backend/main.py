@@ -9,9 +9,13 @@ from backend.video_compare import compare_videos
 
 app = FastAPI()
 
+#folders
 os.makedirs("output", exist_ok=True)
+
+# static for output video only
 app.mount("/output", StaticFiles(directory="output"), name="output")
 
+#cores
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +26,12 @@ app.add_middleware(
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+#home page
+@app.get("/")
+def home():
+    return FileResponse("frontend/index.html")
 
+# upload API
 @app.post("/upload")
 async def upload_video(file: UploadFile = File(...)):
 
@@ -40,5 +49,3 @@ async def upload_video(file: UploadFile = File(...)):
         "phases": phases,
         "video_url": "/output/result.mp4"
     }
-
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
