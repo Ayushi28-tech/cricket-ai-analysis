@@ -41,6 +41,4 @@ async def upload_video(file: UploadFile = File(...)):
         "video_url": "/output/result.mp4"
     }
 
-@app.get("/")
-def home():
-    return FileResponse("index.html")
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
