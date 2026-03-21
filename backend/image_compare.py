@@ -44,13 +44,63 @@ def compare_images(user_image):
     ref_frame = cv2.resize(ref_frame, (int(ref_frame.shape[1] * h / ref_frame.shape[0]), h))
 
     combined = np.hstack((user_frame, ref_frame))
+    
+    top_space = 80   # space height
 
-    cv2.putText(combined, f"AI Match: {similarity}%", (50,50),
-        cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+    h, w = combined.shape[:2]
 
-    cv2.putText(combined, "Compared with Kohli", (50,100),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
+    # black strip add on top
+    new_img = np.zeros((h + top_space, w, 3), dtype=np.uint8)
 
+    # original image ko neeche shift karo
+    new_img[top_space:top_space+h, 0:w] = combined
+
+    combined = new_img
+
+    # main text
+    h_total, w_total = combined.shape[:2]
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+
+    # 🔹 AI Match (center, SMALL)
+    text_main = f"AI Match: {similarity}%"
+    scale_main = 0.8
+    thickness_main = 2
+
+    (text_w, text_h), _ = cv2.getTextSize(text_main, font, scale_main, thickness_main)
+
+    x_main = (w_total - text_w) // 2
+    y_main = 30   # inside black space
+
+    cv2.putText(combined, text_main, (x_main, y_main),
+        font, scale_main, (0,255,0), thickness_main)
+
+    # Compared with (VISIBLE COLOR)
+    text_sub = "Compared with Kohli"
+    scale_sub = 0.6
+    thickness_sub = 2
+
+    (text_w2, text_h2), _ = cv2.getTextSize(text_sub, font, scale_sub, thickness_sub)
+
+    x_sub = (w_total - text_w2) // 2
+    y_sub = 60
+
+    cv2.putText(combined, text_sub, (x_sub, y_sub),
+        font, scale_sub, (0,255,255), thickness_sub)
+
+    # Bottom Right Watermark
+    watermark = "AI Cricket Analysis"
+    scale_wm = 0.5
+    thickness_wm = 1
+
+    (text_wm, text_hm), _ = cv2.getTextSize(watermark, font, scale_wm, thickness_wm)
+
+    x_wm = w_total - text_wm - 10
+    y_wm = h_total - 10
+
+    cv2.putText(combined, watermark, (x_wm, y_wm),
+        font, scale_wm, (180,180,180), thickness_wm)
+        
     cv2.imwrite(OUTPUT_IMAGE, combined)
 
     return similarity, OUTPUT_IMAGE
