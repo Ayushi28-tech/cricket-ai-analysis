@@ -92,15 +92,16 @@
 
         <h3>Upload Your Cricket Shot</h3>
 
-        <input type="file" id="videoFile">
+        <!--<input type="file" id="videoFile">
 
-        <button onclick="uploadVideo()">Analyze Shot</button>
-
+        <button onclick="uploadVideo()">Analyze Shot</button> -->
+        <input type="file" id="imageFile">
+        <button onclick="uploadImage()">Compare Image</button>
     </div>
 
     <h3 id="status"></h3>
 
-    <div class="container">
+    <!-- <div class="container">
 
         <div class="videoBox">
             <h3>How I Played</h3>
@@ -115,17 +116,30 @@
             <h3>AI Processed Video</h3>
             <video id="resultVideo" controls></video>
         </div>
+    </div> -->
+    <div class="container">
+
+        <div class="videoBox">
+            <h3>Uploaded Image</h3>
+            <img id="userImg" width="100%">
+        </div>
+
+        <div class="videoBox">
+            <h3>AI Comparison Result</h3>
+            <img id="resultImg" width="100%">
+        </div>
+
     </div>
 
     <div class="scoreBox">
 
         <p id="similarity"></p>
-        <p id="phases"></p>
-        <p id="feedback"></p>
+        <!-- <p id="phases"></p>
+        <p id="feedback"></p> -->
 
     </div>
 
-    <script>
+    <!-- <script>
 
         async function uploadVideo() {
 
@@ -154,10 +168,40 @@
             
             document.getElementById("refVideo").src = "/videos/cover_drive.mp4?" + new Date().getTime()
             document.getElementById("resultVideo").src = "/output/result.mp4?" + new Date().getTime()
+        } 
+
+    </script> -->
+
+    <script>
+        async function uploadImage() {
+
+            document.getElementById("status").innerText = "Processing image..."
+
+            const fileInput = document.getElementById("imageFile")
+            const file = fileInput.files[0]
+
+            const formData = new FormData()
+            formData.append("file", file)
+
+            // show uploaded image
+            document.getElementById("userImg").src = URL.createObjectURL(file)
+
+            const response = await fetch("/upload-image", {
+                method: "POST",
+                body: formData
+            })
+
+            const data = await response.json()
+
+            document.getElementById("status").innerText = "Done"
+
+            document.getElementById("similarity").innerText =
+                "Similarity Score : " + data.similarity + "%"
+
+            document.getElementById("resultImg").src =
+                "/output/result.jpg?" + new Date().getTime()
         }
-
     </script>
-
 </body>
 
 </html>
