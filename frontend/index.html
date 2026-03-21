@@ -180,26 +180,36 @@
             const fileInput = document.getElementById("imageFile")
             const file = fileInput.files[0]
 
+            if (!file) {
+                alert("Please select image")
+                return
+            }
+
             const formData = new FormData()
             formData.append("file", file)
 
-            // show uploaded image
             document.getElementById("userImg").src = URL.createObjectURL(file)
 
-            const response = await fetch("/upload-image", {
-                method: "POST",
-                body: formData
-            })
+            try {
+                const response = await fetch("/upload-image", {
+                    method: "POST",
+                    body: formData
+                })
 
-            const data = await response.json()
+                const data = await response.json()
 
-            document.getElementById("status").innerText = "Done"
+                document.getElementById("status").innerText = "Done"
 
-            document.getElementById("similarity").innerText =
-                "Similarity Score : " + data.similarity + "%"
+                document.getElementById("similarity").innerText =
+                    "Similarity Score : " + data.similarity + "%"
 
-            document.getElementById("resultImg").src =
-                "/output/result.jpg?" + new Date().getTime()
+                document.getElementById("resultImg").src =
+                    data.image_url + "?" + new Date().getTime()
+
+            } catch (err) {
+                document.getElementById("status").innerText = "Error occurred"
+                console.error(err)
+            }
         }
     </script>
 </body>

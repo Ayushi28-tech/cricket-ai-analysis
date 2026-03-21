@@ -2,11 +2,15 @@ import cv2
 import numpy as np
 from backend.pose_detection import detect_pose
 from sklearn.metrics.pairwise import cosine_similarity
+import os
 
 OUTPUT_IMAGE = "output/result.jpg"
 
 # reference image load (example: virat kohli)
-ref_img = cv2.imread("dataset/kohli.jpg")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ref_path = os.path.join(BASE_DIR, "dataset", "kohli.jpg")
+
+ref_img = cv2.imread(ref_path)
 
 def compare_images(user_image):
 
@@ -14,9 +18,14 @@ def compare_images(user_image):
 
     user_frame, user_landmarks = detect_pose(user)
     ref_frame, ref_landmarks = detect_pose(ref_img)
+
+    if user is None:
+        return 0, OUTPUT_IMAGE
+
     if ref_img is None:
         print("ERROR: kohli.jpg not loaded")
-        
+        return 0, OUTPUT_IMAGE
+
     if user_landmarks is None or len(user_landmarks) == 0:
         return 0, OUTPUT_IMAGE
 
@@ -29,10 +38,18 @@ def compare_images(user_image):
     similarity = int(cosine_similarity(user_flat, ref_flat)[0][0] * 100)
 
     # side-by-side image
+    h = min(user_frame.shape[0], ref_frame.shape[0])
+
+    user_frame = cv2.resize(user_frame, (int(user_frame.shape[1] * h / user_frame.shape[0]), h))
+    ref_frame = cv2.resize(ref_frame, (int(ref_frame.shape[1] * h / ref_frame.shape[0]), h))
+
     combined = np.hstack((user_frame, ref_frame))
 
-    cv2.putText(combined, f"Match: {similarity}%", (50,50),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+    cv2.putText(combined, f"AI Match: {similarity}%", (50,50),
+        cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
+
+    cv2.putText(combined, "Compared with Kohli", (50,100),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
 
     cv2.imwrite(OUTPUT_IMAGE, combined)
 
